@@ -1,0 +1,11 @@
+{
+  "name": "esos-assemble",
+  "version": "1.0.0",
+  "description": "An assembler for ByteByteJump which is specialized for writing BBJ OSes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "FireCubez",
+  "license": "MIT"
+}
