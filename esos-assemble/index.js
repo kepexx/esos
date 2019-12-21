@@ -1,17 +1,21 @@
 currentPos = 0;
-currentFile = process.argv[2] || "./in.bbj";
 require("./asm.js").parse.obf = 0;
 include.includedBefore = [];
+currentFile = "<root>";
+WIDTH = 640;
+HEIGHT = 360;
 try {
-	require("fs").writeFileSync(process.argv[3] || "./out.bbj", Buffer.from(include(currentFile)));
+	require("fs").writeFileSync(process.argv[3] || "./out.bbj", Buffer.from(include(process.argv[2] || "./in.bbj")));
 } catch(e) {
 	if(e.p) console.error(e.message);
 	else throw e;
 }
 
 function include(file) {
+	let oldCurFile = currentFile;
 	try {
 		if(include.includedBefore.includes(file)) return "";
+		currentFile = file;
 		include.includedBefore.push(file);
 		let str = require("fs").readFileSync(file, "utf-8");
 		let asm = require("./asm.js");
@@ -23,7 +27,6 @@ function include(file) {
 				let r = eval(item.value);
 				item.result = r == undefined ? [] : Array.isArray(r) ? r : [r];
 				currentPos += item.result.length;
-				console.log(item.result);
 			} else if(item.type !== "deferred") {
 				item.result = intoBytes(item.value);
 				currentPos += 4;
@@ -35,30 +38,23 @@ function include(file) {
 				// added
 			}
 		}
-		console.log("BEFORE DEFER");
-		console.log(items);
-		console.log("DEFERRED:", deferred);
 		for(let item of deferred) {
 			let r = eval(item.value);
 			item.obj.result = r == undefined ? [] : Array.isArray(r) ? r : [r];
-			console.log(item);
 		}
-		console.log("AFTER DEFER");
-		console.log(items);
 		for(let item of items) {
-			console.log(item);
 			output.push(...item.result);
 		}
+		currentFile = oldCurFile;
 		return output;
 	} catch(e) {
-		if(e.p) {
-			e.message += `\n    at line ${e.location.start.line} column ${e.location.start.column} in file ${e.file}`;
-		}
+		e.message += `\n    at line ${e.location.start.line} column ${e.location.start.column} in file ${e.file}`;
+		currentFile = oldCurFile;
 		throw e;
 	}
 }
 
 function intoBytes(value) {
-	if(Array.isArray(value)) return value.map(intoBytes);
+	if(Array.isArray(value)) return value.flatMap(intoBytes);
 	return [value & 0xFF, value >> 8 & 0xFF, value >> 16 & 0xFF, value >> 24 & 0xFF];
 }
