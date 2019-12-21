@@ -29,11 +29,11 @@ fn main() {
 		unsafe {
 			{
 				let first_page = memory.first_page_mut();
-				std::ptr::write_bytes(first_page.layout.io.keys.as_mut_ptr(), 255, 16);
+				std::ptr::write_bytes(first_page.layout.keys.as_mut_ptr(), 255, 16);
 				if let Some(keys) = window.get_keys() {
 					std::ptr::copy_nonoverlapping(
 						keys.as_ptr() as *const u8,
-						first_page.layout.io.keys.as_mut_ptr(),
+						first_page.layout.keys.as_mut_ptr(),
 						keys.len()
 					);
 				}
@@ -45,7 +45,7 @@ fn main() {
 			*memory.data_mut(b as usize) = v;
 			ip = c as usize;
 			let first_page = memory.try_page_mut(0).unwrap();
-			window.update_with_buffer_size(&first_page.layout.io.vbuf, WIDTH, HEIGHT).unwrap();
+			window.update_with_buffer_size(&first_page.layout.vbuf, WIDTH, HEIGHT).unwrap();
 			if ip as u32 == std::u32::MAX {
 				break;
 			}

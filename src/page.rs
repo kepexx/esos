@@ -13,19 +13,6 @@ pub const PAGE_SIZE: usize = 1024 * 1024 * 4; // 4MiB
 #[repr(C)]
 pub struct FirstPageLayout {
 	pub entry: u32,
-	pub handler: MemErrorHandler,
-	pub io: MemIO
-}
-
-#[repr(C)]
-pub struct MemErrorHandler {
-	pub addr: u32,
-	pub oldip: u32,
-	pub attempted_access: u32
-}
-
-#[repr(C)]
-pub struct MemIO {
 	pub keys: [u8; 16],
 	pub vbuf: [u32; VBUF_SIZE]
 }
