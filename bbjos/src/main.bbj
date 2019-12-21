@@ -1,4 +1,5 @@
 {{/* The BBJ OS */}}
 start
 {{include("mmap.bbj")}}
+0 {{/* just to make output prettier in HxD (aligns to a 3-byte boundary) */}}
 start:0 0 start
