@@ -2,6 +2,7 @@
 
 use minifb::{WindowOptions, Window};
 
+use std::path::Path;
 use page::*;
 pub mod page;
 
@@ -9,10 +10,21 @@ pub const WIDTH:  usize = 640;
 pub const HEIGHT: usize = 360;
 
 fn main() {
-	assert_eq!(std::mem::size_of::<minifb::Key>(), 1);
-
 	let mut args = std::env::args();
 	let disk = args.nth(1).expect("Expected disk directory.");
+	if disk.starts_with("INTODISK=") {
+		let file = args.next().expect("If given `INTODISK=`, a raw file is expected.");
+		let folder: &Path = disk[9..].as_ref();
+		let data = std::fs::read(file).unwrap();
+		for i in 0..(data.len() / PAGE_SIZE) {
+			std::fs::write(
+				folder.join(i.to_string()),
+				&data[i * PAGE_SIZE..][..PAGE_SIZE]
+			).unwrap();
+		}
+		return;
+	}
+	assert_eq!(std::mem::size_of::<minifb::Key>(), 1);
 	let mut memory = PageManager::new(disk.into(), 5);
 
 	let mut window = Window::new(

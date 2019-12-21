@@ -1,4 +1,4 @@
 @echo off
 cd ..
-cargo run
+cargo run -- ./bbjos/disk
 cd bbjos
