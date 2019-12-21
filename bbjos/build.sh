@@ -1,4 +1,3 @@
-@echo off
 cd ../esos-assemble
 echo Building JS Preprocessor...
 pegjs asm.pegjs
