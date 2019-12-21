@@ -13,7 +13,7 @@
 			err.p = true;
 			err.location = ${JSON.stringify(location())};
 			err.file = currentFile;
-			err.message = "Label \`${deobf(label)}\` is not defined";
+			err.message = "Label \`${deobf(label)}\` is not defined\\n    ## compiler details:\\n        - mangled name: \`${label}\`";
 			throw err;
 		}`;
 	}
