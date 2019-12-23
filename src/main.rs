@@ -15,11 +15,14 @@ fn main() {
 	if disk.starts_with("INTODISK=") {
 		let file = args.next().expect("If given `INTODISK=`, a raw file is expected.");
 		let folder: &Path = disk[9..].as_ref();
-		let data = std::fs::read(file).unwrap();
-		for i in 0..(data.len() / PAGE_SIZE) {
+		let data = std::fs::read(&file).unwrap();
+		println!("Read {} bytes of data from input file `{}`", data.len(), file);
+		println!("Writing to disk folder `{}`", folder.display());
+		for (i, chunk) in data.chunks(PAGE_SIZE).enumerate() {
+			println!("PAGE {} (0x{:X} - 0x{:X})", i, i * PAGE_SIZE, i * PAGE_SIZE + chunk.len());
 			std::fs::write(
 				folder.join(i.to_string()),
-				&data[i * PAGE_SIZE..][..PAGE_SIZE]
+				chunk
 			).unwrap();
 		}
 		return;
@@ -50,9 +53,9 @@ fn main() {
 					);
 				}
 			}
-			let a = memory.code(ip);
-			let b = memory.code(ip + 1);
-			let c = memory.code(ip + 2);
+			let a = memory.code_unaligned(ip);
+			let b = memory.code_unaligned(ip + 1);
+			let c = memory.code_unaligned(ip + 2);
 			let v = memory.data(a as usize);
 			*memory.data_mut(b as usize) = v;
 			ip = c as usize;

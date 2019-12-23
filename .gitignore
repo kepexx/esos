@@ -2,3 +2,4 @@
 **/*.rs.bk
 /esos-assemble/asm.js
 /bbjos/target
+/bbjos/disk

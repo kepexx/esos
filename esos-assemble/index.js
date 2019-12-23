@@ -58,8 +58,8 @@ include = (function() {
 			return output;
 		} catch(e) {
 			e.message += "\n    ";
-			if(e.p) e.message += `at line ${e.location.start.line} column ${e.location.start.column} `;
-			e.message += `in file ${currentFile} (${e.p ? e.file : "<abnormal error>"})`;
+			if(e.location) e.message += `at line ${e.location.start.line} column ${e.location.start.column} `;
+			e.message += `in file ${currentFile}`;
 			currentFile = oldCurFile;
 			throw e;
 		}

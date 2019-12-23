@@ -1,2 +1,2 @@
-{{intoBytes(new Array(16).fill(0)) /* keyboard */ }}
-{{intoBytes(new Array(WIDTH * HEIGHT).fill(0)) /* screen buffer */ }}
+{{new Array(16).fill(0) /* keyboard */ }}
+{{intoBytes(new Array(WIDTH * HEIGHT).fill(100)) /* screen buffer */ }}

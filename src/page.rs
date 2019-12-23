@@ -180,6 +180,26 @@ impl PageManager {
 			&mut self.page_mut(page).code[in_page]
 		}
 	}
+
+	#[inline]
+	pub fn code_unaligned(&mut self, idx: usize) -> u32 {
+		let (page, in_page) = split_index(idx);
+		self.try_page(page).map(|p| unsafe {
+			std::ptr::read_unaligned(p.data.as_ptr().offset(in_page as isize) as *const u32)
+		}).unwrap_or(0)
+	}
+
+	/// This function returns an unaligned pointer to the
+	/// given code index (treating code space as data space
+	/// in terms of addresses). The pointer must be accessed using
+	/// `ptr::*_unaligned` functions or similar.
+	#[inline]
+	pub fn code_unaligned_mut<'a>(&'a mut self, idx: usize) -> *mut u32 {
+		let (page, in_page) = split_index_code(idx);
+		unsafe {
+			self.page_mut(page).data.as_ptr().offset(in_page as isize) as *mut u32
+		}
+	}
 }
 
 pub fn split_index(idx: usize) -> (usize, usize) {
