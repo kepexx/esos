@@ -1,0 +1,11 @@
+{{include("align.bbj")}}
+{extern lookup$createBinarySmallTable (op) => {
+	let result = align$alignToMultiple(0x10000);
+	let start = result.length + currentPos;
+	for(let a = 0; a <= 0xFF; a++) {
+		for(let b = 0; b <= 0xFF; b++) {
+			result.push(op(a, b) & 0xFF);
+		}
+	}
+	return {result, start};
+}}

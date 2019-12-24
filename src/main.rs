@@ -54,8 +54,9 @@ fn main() {
 				}
 			}
 			let a = memory.code_unaligned(ip);
-			let b = memory.code_unaligned(ip + 1);
-			let c = memory.code_unaligned(ip + 2);
+			let b = memory.code_unaligned(ip + 4);
+			let c = memory.code_unaligned(ip + 8);
+			println!("Executing: 0x{:X} - {:X} {:X} {:X}", ip, a, b, c);
 			let v = memory.data(a as usize);
 			*memory.data_mut(b as usize) = v;
 			ip = c as usize;

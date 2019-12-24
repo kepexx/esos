@@ -1,0 +1,6 @@
+{extern align$alignToMultiple ((a, val=0) => {
+	let diff = currentPos % a;
+	if(diff === 0) return [];
+	console.log("Alignment:", a, "currentPos:", currentPos, "diff:", diff, "a - diff:", a - diff);
+	return new Array(a - diff).fill(val);
+})}

@@ -1,2 +1,3 @@
+{{console.log("mmap got called")}}
 {{new Array(16).fill(0) /* keyboard */ }}
 {{intoBytes(new Array(WIDTH * HEIGHT).fill(100)) /* screen buffer */ }}
