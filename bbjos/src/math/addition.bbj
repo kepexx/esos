@@ -1,0 +1,21 @@
+{{/*
+	All functions in this file are little-endian, just as the entirety
+	of the operating system.
+*/}}
+{{include("lookup.bbj")}}
+{{
+	let {result, start} = lookup$createBinarySmallTable((a, b) => a + b);
+	global.addition$u8_table = start;
+	result;
+}}
+{{
+	let {result, start} = lookup$createBinarySmallTable((a, b) => (a + b) >> 8);
+	global.addition$u8_carry = start;
+	result;
+}}
+{extern addition$u8_add
+	lookup$accessBinarySmallTable.bind(null, addition$u8_table)
+}
+{extern addition$u8_carry
+	lookup$accessBinarySmallTable.bind(null, addition$u8_carry)
+}

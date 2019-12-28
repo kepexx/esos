@@ -1,0 +1,15 @@
+{{include("align.bbj")}}
+
+extern kernelStart
+{{/*include("control/if.bbj")*/}}
+{{include("math/logic.bbj")}}
+
+extern true_addr:{{TRUE}} extern res_addr:0xDEADBEEF
+
+{{
+	// padding for HxD
+	//align$alignToMultiple(12)
+	console.log("the current pos is", currentPos);
+}}
+extern kernelStart:
+{{logic$not(true_addr, res_addr, -1)}}

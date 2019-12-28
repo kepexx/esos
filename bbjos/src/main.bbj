@@ -1,24 +1,8 @@
 {{
-	/*
-	 * The BBJ OS
-	 */
+	/* Entrypoint into either kernel or astest */
+	if(global.TEST) {
+		include("astest.bbj");
+	} else {
+		include("kernel.bbj");
+	}
 }}
-{*{include("lookup.bbj")}}
-
-extern kernelStart
-{*{let x = include("mmap.bbj"); console.log(x.length); x;}}
-{{
-	let {result, start} = lookup$createBinarySmallTable((a, b) => a + b);
-	global.addition_lookup_table = start;
-	result;
-}}
-extern $16_addr:16 extern $2_addr:2
-extern kernelStart:
-{$ 24 {
-	intoBytes([
-		$16_addr, $_add_lookup, kernelStart + 12,
-		$2_addr, $_add_lookup + 1, kernelStart + 24
-	]);
-}$}
-extern $_add_lookup:extern addition_lookup_table result -1
-result:123

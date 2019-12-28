@@ -15,7 +15,7 @@ rem
 mkdir disk
 )
 cd src
-node ../../esos-assemble/index.js main.bbj ../target/main
+node ../../esos-assemble/index.js main.bbj ../target/main %*
 echo Building emulator and splitting into disk...
 cd ../..
 cargo run -- INTODISK=./bbjos/disk ./bbjos/target/main

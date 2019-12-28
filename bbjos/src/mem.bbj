@@ -1,0 +1,7 @@
+{extern mem$icopy (src, dst, size) => {
+	let r = [];
+	for(let i = 0; i < size; i++) {
+		r.push(...intoBytes([src + i, dst + i, currentPos + i * 12 + 12]));
+	}
+	return r;
+}}

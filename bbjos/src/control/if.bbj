@@ -1,0 +1,16 @@
+{{include("align.bbj")}}
+{{include("mem.bbj")}}
+
+{{align$alignToMultiple(0x100)}}
+extern control$if_false:0 extern control$if_true:0
+{extern control$if (a, yesjmpPtr, nojmpPtr) => {
+	let r = mem$icopy(control$if_false, nojmpPtr, 4);
+	r.push(...mem$icopy(control$if_true, yesjmpPtr, 4));
+	r.push(intoBytes([
+		/* 0  */ a, /* 4  */ currentPos + 20, /* 8  */ currentPos + 12,
+		/* 12 */ 0, /* 16 */ 0, /* 20 */ control$if_false
+	]));
+	return r;
+}}
+
+{{global.control$ifLen = 120; []}}

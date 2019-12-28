@@ -1,0 +1,7 @@
+extern kernelStart
+{{include("mmap.bbj")}}
+{{include("math/logic.bbj")}}
+
+extern true_addr:{{TRUE}} extern res_addr:0xDEADBEEF
+extern kernelStart:
+{{logic$not(true_addr, res_addr, -1)}}

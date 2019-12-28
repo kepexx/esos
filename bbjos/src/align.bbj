@@ -1,6 +1,29 @@
-{extern align$alignToMultiple ((a, val=0) => {
+{extern align$alignToMultiple (a, offset=0, vals=[]) => {
 	let diff = currentPos % a;
-	if(diff === 0) return [];
-	console.log("Alignment:", a, "currentPos:", currentPos, "diff:", diff, "a - diff:", a - diff);
-	return new Array(a - diff).fill(val);
-})}
+	console.log("currentPos:", currentPos, "a:", a, "diff:", diff, "a - diff:", a - diff);
+	let remaining = a - diff;
+	if(diff === 0) remaining = 0;
+	remaining += offset;
+	while(remaining < 0) {
+		remaining += a;
+	}
+	if(remaining === 0) return [];
+	let end = currentPos + remaining;
+	registerFixedAddr(0, currentPos);
+	if((end - offset) % a !== 0) {
+		throw new Error("ALIGN ERROR. `end - offset` was not divisible by alignment. This is a bug in align.bbj\n    - end value: " + end + "\n    - alignment: " + a + "\n    - remaining: " + remaining);
+	}
+	let eb = intoBytes(end);
+	let arr = new Array(remaining).fill(0);
+	if(arr.length >= 12) {
+		arr[8]  = eb[0];
+		arr[9]  = eb[1];
+		arr[10] = eb[2];
+		arr[11] = eb[3];
+	}
+	for(let i = 12, j = 0; i < arr.length && j < vals.length; i++) {
+		arr[i] = vals[j];
+		if(!registerFixedAddr(vals[j], currentPos + i)) j++;
+	}
+	return arr;
+}}

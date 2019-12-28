@@ -1,11 +1,20 @@
 {{include("align.bbj")}}
-{extern lookup$createBinarySmallTable (op) => {
+{{global.lookup$createBinarySmallTable = (op) => {
 	let result = align$alignToMultiple(0x10000);
-	let start = result.length + currentPos;
+	let start = currentPos;
 	for(let a = 0; a <= 0xFF; a++) {
 		for(let b = 0; b <= 0xFF; b++) {
 			result.push(op(a, b) & 0xFF);
+			currentPos++;
 		}
 	}
 	return {result, start};
+}; []}}
+{extern lookup$accessBinarySmallTable (table, a, b, res, jmp) => {
+	return intoBytes([
+		/* 0  */ a, currentPos + 24, currentPos + 12,
+		/* 12 */ b, currentPos + 25, currentPos + 24,
+		/* 24 */ table, res, jmp
+		/* 36 */
+	]);
 }}

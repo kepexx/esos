@@ -26,15 +26,22 @@ include = (function() {
 			let output = [];
 			for(let item of items) {
 				if(item.type === "js") {
+					let savePos = currentPos;
 					let r = eval(item.value);
 					asm.parse.obf = myObf;
-					item.result = r == undefined ? [] : r.length == undefined ? [r] : r;
-					if(item.increasePos) {
-						currentPos += item.result.length;
-						console.log("currentPos increase by", item.result.length);
+					item.result = arraywrap(r);
+					if(currentPos > savePos + item.result.length) {
+						console.warn(`\
+WARNING: currentPos was incremented more than the result length, \
+are you incorrectly changing currentPos?
+    - additional info:
+		  - the error occured while processing a JS expression
+    eval error:\n${item.value}`);
 					}
+					currentPos = savePos + item.result.length;
 				} else if(item.type === "deferred") {
-					currentPos += item.value.length;
+					item.cpos = currentPos;
+					currentPos += (item.value.length = eval(item.value.length));
 					console.log("currentPos deferred increase by", item.value.length);
 				} else {
 					item.result = intoBytes(item.value);
@@ -45,10 +52,21 @@ include = (function() {
 			//console.log(items);
 			for(let item of deferred) {
 				//console.log("eval:", item);
+				let savePos = currentPos;
+				currentPos = item.cpos;
 				let r = eval(item.value.code);
+				item.result = arraywrap(r);
+				if(currentPos > savePos + item.result.length) {
+					console.warn(`\
+WARNING: currentPos was incremented more than the result length, \
+are you incorrectly changing currentPos?
+    - additional info:
+		  - the error occurred while processing a deferred JS expression
+    eval error:\n${item.value}`);
+				}
+				currentPos = savePos;
 				//console.log("result:", r);
 				asm.parse.obf = myObf;
-				item.result = r == undefined ? [] : r.length == undefined ? [r] : r;
 				if(item.result.length !== item.value.length) {
 					let msg = "Deferred JS expression result's length was not equal to specified length\n";
 					msg += `    expected length: ${item.value.length}\n    actual length: ${item.result.length}\n    returned value: ${require('util').inspect(item.result, {depth: null})}`;
@@ -93,12 +111,37 @@ intoBytes = function intoBytes(value) {
 	return a8;
 }
 
+arraywrap = function arraywrap(r) {
+	return r == undefined ? [] : r.length == undefined ? [r] : r;
+}
+
+let __$fixedaddrs = new Map();
+fixedAddr = function fixedAddr(x) {
+	if(__$fixedaddrs.has(x)) return __$fixedaddrs.get(x);
+	throw new Error("Tried to access fixed address " + x + " which is not yet registered. Try calling registerFixedAddr(0, ...)");
+}
+
+registerFixedAddr = function registerFixedAddr(x, a) {
+	if(__$fixedaddrs.has(x)) return false;
+	__$fixedaddrs.set(x, a);
+	return true;
+}
+
+isFixedAddrRegistered = function isFixedAddrRegistered(x) {
+	return __$fixedaddrs.has(x);
+}
 try {
+	eval(process.argv.slice(4).join(" "));
 	require("fs").writeFileSync(process.argv[3] || "./out.bbj", Buffer.from(include(process.argv[2] || "./in.bbj")));
 } catch(e) {
 	if(e.p) {
 		console.error(e.message);
 		process.exit(1);
+	} else {
+		console.error("GLOBAL DUMP");
+		for(let f in global) {
+			console.log(f + ":", global[f].toString());
+		}
+		throw e;
 	}
-	else throw e;
 }

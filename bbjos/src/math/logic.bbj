@@ -1,0 +1,23 @@
+{{global.TRUE = intoBytes(4); global.FALSE = intoBytes(0); []}}
+{{include("control/if.bbj")}}
+{extern logic$not (a, res, cont) => {
+	let registered0 = false;
+	let registered4addr = null;
+	if(registerFixedAddr(0, currentPos + logic$notLen)) registered0 = true;
+	if(!isFixedAddrRegistered(4)) {
+		registered4addr = logic$notLen + (+registered0);
+
+		registerFixedAddr(4, currentPos + registered4addr);
+	}
+	let r = mem$icopy(fixedAddr(4), control$if_false, 1);
+	r.push(...mem$icopy(fixedAddr(0), control$if_true, 1));
+	r.push(...intoBytes([
+		/* 0  */ a, /* 4  */ currentPos + 12, /* 8  */ currentPos + 12,
+		/* 12 */ control$if_false, /* 16 */ res, /* 20 */ cont
+	]));
+	if(registered0) r[logic$notLen] = 0;
+	if(registered4addr != null) r[registered4addr] = 4;
+	return r;
+}}
+
+{{global.logic$notLen = 48; []}}
